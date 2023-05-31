@@ -1,57 +1,49 @@
 import sql from 'mssql';
-import configDB from '../models/configDB.js';
+import configDB from '../models/db.js';
 
-export const getList=async()=>
-{
-  const conn = await sql.connect(configDB);
-  const results = await conn.request().query('SELECT id,imagen,nombre FROM Personajes ');
-  return results.recordset;
-}
-
-export const getDetailsbyId=async()=>
-{
-  const conn = await sql.connect(configDB);
-  const results = await conn.request().input( "pId", id).query('SELECT * FROM Personajes WHERE @pId=id' ); //inner join
-  return results.recordset;
-}
-
-
-export const getByNameAgeMovie = async () => {
+export const getAll = async () => {
     const conn = await sql.connect(configDB);
-    const results = await conn.request().input("pNombre"= nombre, "pEdad", edad, "pPelicula", peliculaAsociada).query('SELECT * FROM Personajes WHERE @pNombre =nombre || @pEdad=edad || @pPelicula= peliculaAsociada');
+    const results = await conn.request().query('SELECT * FROM Pizzas');
     return results.recordset;
 }
 
-export const insert = async (personaje) => {
-  const conn = await sql.connect(configDB);
-  const results = await conn.request() 
-  .input( "pNombre", sql.VarChar, personaje.nombre)
-  .input("pEdad", sql.Int, personaje.edad)
-  .input( "pImagen", sql.VarChar, personaje.imagen)
-  .input("pPeso", sql.Float, personaje.peso)
-  .query('INSERT INTO Personajes (nombre, edad, imagen, peso) VALUES (@pNombre, @pEdad, @pImagen, @pPeso)');
 
-  return results.recordset;
+export const getById = async (id) => {
+    const conn = await sql.connect(configDB);
+    const results = await conn.request().input("pId",id).query('SELECT * FROM Pizzas WHERE @pId = id');
+    return results.recordset;
+}
+
+export const insert = async (pizza) => {
+    const conn = await sql.connect(configDB);
+    const results = await conn.request() 
+    .input( "pNombre", sql.VarChar, pizza.Nombre)
+    .input("pLibreGluten", sql.Bit, pizza.LibreGluten)
+    .input( "pImporte", sql.Float, pizza.Importe)
+    .input("pDescripcion", sql.VarChar, pizza.Descripcion)
+    .query('INSERT INTO Pizzas (Nombre, LibreGluten, Importe, Descripcion) VALUES (@pNombre, @pLibreGluten, @pImporte, @pDescripcion)');
+
+    return results.recordset;
 }
 
 
 
-export const updateById = async (id, personaje) => {
-  const conn = await sql.connect(configDB);
-  const results = await conn.request().input("pId", id)
-  .input( "pNombre", sql.VarChar, personaje.nombre)
-  .input("pEdad", sql.Int, personaje.edad)
-  .input( "pImagen", sql.VarChar, personaje.imagen)
-  .input("pPeso", sql.Float, personaje.peso)
-  .query('UPDATE Personajes SET nombre = @pNombre, edad = @pEdad, imagen = @pImagen, peso = @pPeso WHERE @pId = id ');
+export const updateById = async (id, pizza) => {
+    const conn = await sql.connect(configDB);
+    const results = await conn.request().input("pId", id)
+    .input( "pNombre", sql.VarChar, pizza.Nombre)
+    .input("pLibreGluten", sql.Bit, pizza.LibreGluten)
+    .input( "pImporte", sql.Float, pizza.Importe)
+    .input("pDescripcion", sql.VarChar, pizza.Descripcion)
+    .query('UPDATE Pizzas SET Nombre = @pNombre, Descripcion = @pDescripcion, LibreGluten = @pLibreGluten, Importe = @pImporte  WHERE @pId = id ');
 
-  return results;
+    return results;
 }
 
 
 export const deleteById = async (id) => {
-  const conn = await sql.connect(configDB);
-  const results = await conn.request().input("pId", id).query('DELETE FROM Personajes WHERE @pId = id');
+    const conn = await sql.connect(configDB);
+    const results = await conn.request().input("pId", id).query('DELETE FROM Pizzas WHERE @pId = id');
 
-  return results;
+    return results;
 }
